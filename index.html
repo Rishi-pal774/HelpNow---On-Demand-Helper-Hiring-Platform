@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HelpNow - Service Marketplace</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <span class="logo">🏠</span>
+                <span class="brand-name">HelpNow</span>
+            </div>
+            <div class="nav-menu">
+                <a href="#" class="nav-link" data-page="home" data-i18n="nav_home">Home</a>
+                <a href="#" class="nav-link" data-page="services" data-i18n="nav_services">Services</a>
+                <a href="#" class="nav-link auth-required" data-page="bookings" data-i18n="nav_bookings">My Bookings</a>
+                <a href="#" class="nav-link auth-required" data-page="dashboard" data-i18n="nav_dashboard">Dashboard</a>
+            </div>
+            <div class="nav-actions">
+                <select id="languageSelector" class="language-selector">
+                    <option value="en">English</option>
+                    <option value="hi">हिन्दी</option>
+                </select>
+                <button class="btn btn--secondary btn--sm" id="authBtn" data-i18n="nav_login">Login</button>
+                <button class="btn btn--secondary btn--sm" id="logoutBtn" style="display:none;" data-i18n="nav_logout">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Home Page -->
+        <section id="homePage" class="page active">
+            <div class="hero">
+                <div class="hero-content">
+                    <h1 class="hero-title" data-i18n="home_title">Welcome to HelpNow</h1>
+                    <p class="hero-subtitle" data-i18n="home_subtitle">Find reliable service partners near you</p>
+                    <button class="btn btn--primary btn--lg" onclick="navigateTo('services')" data-i18n="home_browse_services">Browse Services</button>
+                </div>
+            </div>
+            <div class="container">
+                <h2 class="section-title" data-i18n="services_title">Our Services</h2>
+                <div class="services-grid" id="homeServicesGrid"></div>
+            </div>
+        </section>
+
+        <!-- Services Page -->
+        <section id="servicesPage" class="page">
+            <div class="container">
+                <h1 class="page-title" data-i18n="services_title">Our Services</h1>
+                <p class="page-subtitle" data-i18n="services_select">Select a service to book</p>
+                <div class="services-grid" id="servicesGrid"></div>
+            </div>
+        </section>
+
+        <!-- Bookings Page -->
+        <section id="bookingsPage" class="page">
+            <div class="container">
+                <h1 class="page-title" data-i18n="dashboard_bookings">My Bookings</h1>
+                <div class="bookings-tabs">
+                    <button class="tab-btn active" data-tab="upcoming" data-i18n="dashboard_upcoming">Upcoming</button>
+                    <button class="tab-btn" data-tab="completed" data-i18n="dashboard_completed">Completed</button>
+                </div>
+                <div class="bookings-list" id="bookingsList"></div>
+            </div>
+        </section>
+
+        <!-- Dashboard Page -->
+        <section id="dashboardPage" class="page">
+            <div class="container">
+                <h1 class="page-title" data-i18n="dashboard_title">My Dashboard</h1>
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <div class="card__body">
+                            <h3 data-i18n="dashboard_profile">Profile</h3>
+                            <div id="profileInfo"></div>
+                            <button class="btn btn--secondary" onclick="showEditProfile()" data-i18n="dashboard_edit_profile">Edit Profile</button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card__body">
+                            <h3 data-i18n="dashboard_bookings">My Bookings</h3>
+                            <div id="dashboardBookings"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Booking Form Page -->
+        <section id="bookingFormPage" class="page">
+            <div class="container">
+                <div class="form-container">
+                    <h1 class="page-title" data-i18n="booking_title">Book Service</h1>
+                    <form id="bookingForm" class="auth-form">
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="booking_service">Select Service</label>
+                            <select id="bookingServiceSelect" class="form-control" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="booking_date">Date</label>
+                            <input type="date" id="bookingDate" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="booking_time">Time</label>
+                            <input type="time" id="bookingTime" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="booking_location">Location/Address</label>
+                            <textarea id="bookingLocation" class="form-control" rows="3" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="booking_description">Work Description</label>
+                            <textarea id="bookingDescription" class="form-control" rows="4" required></textarea>
+                        </div>
+                        <div class="booking-price" id="bookingPriceDisplay"></div>
+                        <button type="submit" class="btn btn--primary btn--full-width" data-i18n="booking_submit">Book Now</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tracking Page -->
+        <section id="trackingPage" class="page">
+            <div class="container">
+                <h1 class="page-title" data-i18n="tracking_title">Service Partner Location</h1>
+                <div class="tracking-container">
+                    <div class="tracking-map" id="trackingMap">
+                        <canvas id="mapCanvas" width="600" height="400"></canvas>
+                    </div>
+                    <div class="tracking-info card">
+                        <div class="card__body">
+                            <h3 data-i18n="tracking_partner_info">Service Partner Details</h3>
+                            <div id="partnerDetails"></div>
+                            <div class="tracking-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label" data-i18n="tracking_distance">Distance</span>
+                                    <span class="stat-value" id="partnerDistance">2.5 km</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label" data-i18n="tracking_eta">ETA</span>
+                                    <span class="stat-value" id="partnerETA">15 min</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label" data-i18n="tracking_status">Status</span>
+                                    <span class="stat-value status status--success" id="partnerStatus" data-i18n="tracking_on_way">On the way</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Auth Modal -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeAuthModal()">&times;</span>
+            
+            <!-- Login Form -->
+            <div id="loginForm" class="auth-form-container">
+                <h2 class="form-title" data-i18n="login_title">Login</h2>
+                <form id="loginFormElement" class="auth-form">
+                    <div class="form-group">
+                        <label class="form-label" data-i18n="login_email">Email</label>
+                        <input type="email" id="loginEmail" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" data-i18n="login_password">Password</label>
+                        <input type="password" id="loginPassword" class="form-control" required>
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" id="rememberMe" class="form-checkbox">
+                        <label for="rememberMe" data-i18n="login_remember">Remember me</label>
+                    </div>
+                    <button type="submit" class="btn btn--primary btn--full-width" data-i18n="login_button">Login</button>
+                    <div class="form-links">
+                        <a href="#" onclick="showForgotPassword()" data-i18n="login_forgot">Forgot Password?</a>
+                        <a href="#" onclick="showSignup()" data-i18n="login_signup_link">Don't have account? Sign Up</a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Signup Form -->
+            <div id="signupForm" class="auth-form-container" style="display:none;">
+                <h2 class="form-title" data-i18n="signup_title">Create Account</h2>
+                <form id="signupFormElement" class="auth-form">
+                    <div class="form-group">
+                        <label class="form-label" data-i18n="signup_name">Full Name</label>
+                        <input type="text" id="signupName" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" data-i18n="signup_email">Email</label>
+                        <input type="email" id="signupEmail" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" data-i18n="signup_phone">Phone Number</label>
+                        <input type="tel" id="signupPhone" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" data-i18n="signup_password">Password</label>
+                        <input type="password" id="signupPassword" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" data-i18n="signup_confirm_password">Confirm Password</label>
+                        <input type="password" id="signupConfirmPassword" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" data-i18n="signup_role">Role</label>
+                        <select id="signupRole" class="form-control" required>
+                            <option value="customer" data-i18n="signup_customer">Customer</option>
+                            <option value="partner" data-i18n="signup_partner">Service Partner</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn--primary btn--full-width" data-i18n="signup_button">Sign Up</button>
+                    <div class="form-links">
+                        <a href="#" onclick="showLogin()" data-i18n="signup_login_link">Already have account? Login</a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- OTP Verification Form -->
+            <div id="otpForm" class="auth-form-container" style="display:none;">
+                <h2 class="form-title" data-i18n="otp_title">Verify Email</h2>
+                <p class="form-subtitle" data-i18n="otp_message">Enter the OTP sent to your email</p>
+                <form id="otpFormElement" class="auth-form">
+                    <div class="form-group">
+                        <label class="form-label" data-i18n="otp_code">OTP Code</label>
+                        <input type="text" id="otpCode" class="form-control" maxlength="6" required>
+                        <small class="form-hint">Generated OTP: <span id="generatedOTP"></span></small>
+                    </div>
+                    <button type="submit" class="btn btn--primary btn--full-width" data-i18n="otp_verify">Verify OTP</button>
+                    <div class="form-links">
+                        <a href="#" onclick="resendOTP()" data-i18n="otp_resend">Resend OTP</a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Forgot Password Form -->
+            <div id="forgotPasswordForm" class="auth-form-container" style="display:none;">
+                <h2 class="form-title" data-i18n="forgot_title">Reset Password</h2>
+                <form id="forgotPasswordFormElement" class="auth-form">
+                    <div class="form-group">
+                        <label class="form-label" data-i18n="forgot_email">Enter your email</label>
+                        <input type="email" id="forgotEmail" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn--primary btn--full-width" data-i18n="forgot_send">Send Reset Link</button>
+                    <div class="form-links">
+                        <a href="#" onclick="showLogin()" data-i18n="login_title">Back to Login</a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Reset Password Form -->
+            <div id="resetPasswordForm" class="auth-form-container" style="display:none;">
+                <h2 class="form-title" data-i18n="reset_password_title">Set New Password</h2>
+                <form id="resetPasswordFormElement" class="auth-form">
+                    <div class="form-group">
+                        <label class="form-label" data-i18n="reset_new_password">New Password</label>
+                        <input type="password" id="resetPassword" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" data-i18n="reset_confirm">Confirm Password</label>
+                        <input type="password" id="resetConfirmPassword" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn--primary btn--full-width" data-i18n="reset_button">Reset Password</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="loading-spinner" style="display:none;">
+        <div class="spinner"></div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
